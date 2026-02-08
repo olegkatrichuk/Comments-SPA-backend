@@ -25,7 +25,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
+        policy.SetIsOriginAllowed(_ => true)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -72,7 +72,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 app.UseCors();
 app.UseStaticFiles();
 app.UseRateLimiter();
@@ -83,10 +82,9 @@ app.MapGraphQL("/graphql");
 app.MapHub<CommentsHub>("/hubs/comments");
 app.MapHealthChecks("/health");
 
-// Auto-migrate database in Development
-if (app.Environment.IsDevelopment())
+// Auto-migrate database on startup
+using (var scope = app.Services.CreateScope())
 {
-    using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<CommentsDbContext>();
     await dbContext.Database.MigrateAsync();
 }
