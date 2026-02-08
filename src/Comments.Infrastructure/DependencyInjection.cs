@@ -75,8 +75,12 @@ public static class DependencyInjection
 
             bus.UsingRabbitMq((context, cfg) =>
             {
-                var rabbitConnectionString = config.GetConnectionString("RabbitMQ")
-                    ?? "amqp://guest:guest@localhost:5672/";
+                var rabbitConnectionString = config.GetConnectionString("RabbitMQ");
+                if (string.IsNullOrWhiteSpace(rabbitConnectionString)
+                    || !Uri.TryCreate(rabbitConnectionString, UriKind.Absolute, out _))
+                {
+                    rabbitConnectionString = "amqp://guest:guest@rabbitmq:5672/";
+                }
                 cfg.Host(new Uri(rabbitConnectionString));
                 cfg.ConfigureEndpoints(context);
             });
