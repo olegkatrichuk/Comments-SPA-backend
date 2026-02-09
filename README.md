@@ -10,7 +10,7 @@ SPA-приложение для комментариев с каскадной �
 |-----------|-----------|
 | Backend | .NET 9, ASP.NET Core Web API |
 | ORM | Entity Framework Core 9 |
-| Frontend | Next.js 15 (App Router, TypeScript, Tailwind CSS) |
+| Frontend | Next.js 16 (App Router, TypeScript, Tailwind CSS) |
 | База данных | PostgreSQL 17 |
 | Кэш | Redis 7 |
 | Брокер сообщений | RabbitMQ 4 (через MassTransit) |
@@ -36,7 +36,7 @@ SPA-приложение для комментариев с каскадной �
 │   └── Comments.LoadTests/          # NBomber нагрузочные сценарии
 ├── docs/
 │   └── db-schema.sql                # Схема БД (PostgreSQL)
-├── docker-compose.yml
+├── docker-compose.yaml
 ├── Dockerfile.api
 ├── Dockerfile.web
 └── Comments.sln
