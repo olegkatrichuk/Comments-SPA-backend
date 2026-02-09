@@ -111,7 +111,7 @@ export default function CommentCard({ comment, depth = 0 }: CommentCardProps) {
                     <img
                       src={comment.attachment.url}
                       alt={comment.attachment.fileName}
-                      className="w-32 h-32 object-cover rounded-md border border-gray-200 group-hover:border-primary-300 transition-colors"
+                      className="w-32 h-32 object-cover rounded-md border-2 border-gray-200 group-hover:border-red-500 transition-colors"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-md transition-colors flex items-center justify-center">
                       <svg
