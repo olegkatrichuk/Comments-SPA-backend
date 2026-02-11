@@ -320,9 +320,15 @@ export default function CommentForm({
         {createComment.isError && (
           <div className="p-3 bg-red-50 border border-red-200 rounded-md">
             <p className="text-sm text-red-600">
-              {createComment.error instanceof Error
-                ? createComment.error.message
-                : "Failed to post comment. Please try again."}
+              {(() => {
+                const err = createComment.error;
+                const detail =
+                  err &&
+                  typeof err === "object" &&
+                  "response" in err &&
+                  (err as { response?: { data?: { detail?: string } } }).response?.data?.detail;
+                return detail || (err instanceof Error ? err.message : "Failed to post comment. Please try again.");
+              })()}
             </p>
           </div>
         )}

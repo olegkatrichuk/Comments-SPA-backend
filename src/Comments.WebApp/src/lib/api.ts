@@ -78,10 +78,10 @@ export async function searchComments(
   pageSize: number = 25
 ): Promise<PagedResult<Comment>> {
   const { data } = await apiClient.get<PagedResult<Comment>>(
-    "/comments/search",
+    "/search",
     {
       params: {
-        query,
+        q: query,
         page,
         pageSize,
       },
