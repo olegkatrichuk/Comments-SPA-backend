@@ -52,11 +52,14 @@ public sealed class CommentRepository : ICommentRepository
         var items = await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .AsSplitQuery()
             .Include(c => c.Attachment)
-            .Include(c => c.Replies)
-                .ThenInclude(r => r.Attachment)
             .ToListAsync(ct);
+
+        // Recursively load all nested replies
+        foreach (var item in items)
+        {
+            await LoadRepliesRecursivelyAsync(item, ct);
+        }
 
         return (items, totalCount);
     }
