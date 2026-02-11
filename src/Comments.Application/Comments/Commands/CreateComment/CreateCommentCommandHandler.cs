@@ -43,7 +43,16 @@ public sealed class CreateCommentCommandHandler : IRequestHandler<CreateCommentC
         if (!captchaValid)
             throw new InvalidOperationException("CAPTCHA validation failed.");
 
-        // 2. Validate HTML tags (XHTML closure)
+        // 2. Check userName + email uniqueness
+        var existingByUserName = await _commentRepository.FindByUserNameAsync(request.UserName, cancellationToken);
+        if (existingByUserName is not null && !string.Equals(existingByUserName.Email, request.Email, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException($"Username '{request.UserName}' is already associated with a different email.");
+
+        var existingByEmail = await _commentRepository.FindByEmailAsync(request.Email, cancellationToken);
+        if (existingByEmail is not null && !string.Equals(existingByEmail.UserName, request.UserName, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException($"Email '{request.Email}' is already associated with a different username.");
+
+        // 3. Validate HTML tags (XHTML closure)
         var (isValid, error) = _htmlTagValidator.ValidateTags(request.Text);
         if (!isValid)
             throw new InvalidOperationException($"Invalid HTML in comment text: {error}");

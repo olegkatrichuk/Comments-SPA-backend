@@ -13,6 +13,8 @@ public interface ICommentRepository
         SortField sortField,
         SortDirection sortDirection,
         CancellationToken ct = default);
+    Task<Comment?> FindByUserNameAsync(string userName, CancellationToken ct = default);
+    Task<Comment?> FindByEmailAsync(string email, CancellationToken ct = default);
     Task AddAsync(Comment comment, CancellationToken ct = default);
     Task SaveChangesAsync(CancellationToken ct = default);
 }

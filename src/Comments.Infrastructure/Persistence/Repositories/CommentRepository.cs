@@ -64,6 +64,18 @@ public sealed class CommentRepository : ICommentRepository
         return (items, totalCount);
     }
 
+    public async Task<Comment?> FindByUserNameAsync(string userName, CancellationToken ct = default)
+    {
+        return await _dbContext.Comments
+            .FirstOrDefaultAsync(c => c.UserName == userName, ct);
+    }
+
+    public async Task<Comment?> FindByEmailAsync(string email, CancellationToken ct = default)
+    {
+        return await _dbContext.Comments
+            .FirstOrDefaultAsync(c => c.Email == email, ct);
+    }
+
     public async Task AddAsync(Comment comment, CancellationToken ct = default)
     {
         await _dbContext.Comments.AddAsync(comment, ct);
