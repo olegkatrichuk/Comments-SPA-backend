@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
 interface LightboxProps {
   src: string;
@@ -17,14 +17,26 @@ export default function Lightbox({
 }: LightboxProps) {
   const [textContent, setTextContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [closing, setClosing] = useState(false);
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  const fadeDuration = 300;
+
+  const handleClose = useCallback(() => {
+    setClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, fadeDuration);
+  }, [onClose]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose();
+        handleClose();
       }
     },
-    [onClose]
+    [handleClose]
   );
 
   useEffect(() => {
@@ -56,20 +68,31 @@ export default function Lightbox({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in"
-      onClick={onClose}
+      ref={overlayRef}
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{
+        animation: closing
+          ? `lightbox-fade-out ${fadeDuration}ms ease-in forwards`
+          : `lightbox-fade-in ${fadeDuration}ms ease-out forwards`,
+      }}
+      onClick={handleClose}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/80" />
 
       {/* Content */}
       <div
-        className="relative z-10 max-w-[90vw] max-h-[90vh] animate-slide-up"
+        className="relative z-10 flex flex-col items-center max-w-[90vw] max-h-[90vh]"
+        style={{
+          animation: closing
+            ? `lightbox-scale-out ${fadeDuration}ms ease-in forwards`
+            : `lightbox-scale-in ${fadeDuration}ms ease-out forwards`,
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute -top-10 right-0 p-1 text-white/80 hover:text-white transition-colors"
           title="Close (Esc)"
         >
@@ -100,13 +123,41 @@ export default function Lightbox({
                 {textContent}
               </pre>
             )}
+            {/* Caption for text file */}
+            {alt && (
+              <div className="mt-3 pt-3 border-t border-gray-200 text-center text-xs text-gray-500">
+                {alt}
+              </div>
+            )}
           </div>
         ) : (
-          <img
-            src={src}
-            alt={alt || "Full size image"}
-            className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
-          />
+          <>
+            {/* Loading spinner */}
+            {!imageLoaded && (
+              <div className="flex items-center justify-center py-16">
+                <div className="w-8 h-8 border-2 border-white/50 border-t-white rounded-full animate-spin" />
+              </div>
+            )}
+            {/* Image */}
+            <img
+              src={src}
+              alt={alt || "Full size image"}
+              className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+              style={{
+                display: imageLoaded ? "block" : "none",
+                animation: imageLoaded
+                  ? `lightbox-image-fade ${fadeDuration}ms ease-out forwards`
+                  : "none",
+              }}
+              onLoad={() => setImageLoaded(true)}
+            />
+            {/* Caption */}
+            {alt && imageLoaded && (
+              <div className="mt-3 px-4 py-2 text-center text-sm text-white/90 bg-black/40 rounded-md">
+                {alt}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
