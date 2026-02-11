@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import type { Comment } from "@/lib/types";
-import { getFileUrl } from "@/lib/api";
 import CommentForm from "./CommentForm";
 import Lightbox from "@/components/ui/Lightbox";
 
@@ -47,7 +46,7 @@ export default function CommentCard({ comment, depth = 0 }: CommentCardProps) {
   const handleAttachmentClick = () => {
     if (!comment.attachment) return;
 
-    const url = getFileUrl(comment.attachment.fileName);
+    const url = comment.attachment.url;
     const isText = comment.attachment.contentType === "text/plain";
 
     setIsTextLightbox(isText);
@@ -109,7 +108,7 @@ export default function CommentCard({ comment, depth = 0 }: CommentCardProps) {
                     className="group relative inline-block"
                   >
                     <img
-                      src={getFileUrl(comment.attachment.fileName)}
+                      src={comment.attachment.url}
                       alt={comment.attachment.fileName}
                       className="w-32 h-32 object-cover rounded-md border border-gray-200 group-hover:border-primary-300 transition-colors"
                     />
